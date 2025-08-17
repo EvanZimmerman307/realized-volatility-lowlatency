@@ -1,0 +1,8 @@
+url: "http://127.0.0.1:8000/predict"
+iters: 400
+batch_size: 32
+nfeat: 14
+seqlen: 600
+warmup: 20
+concurrency: 8
+out_json: artifacts/bench_report.json

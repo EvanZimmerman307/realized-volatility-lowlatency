@@ -1,0 +1,17 @@
+numpy
+pandas
+polars>=0.20.0
+pyarrow
+scikit-learn
+xgboost
+lightgbm
+torch>=2.2
+onnx
+# onnxruntime-gpu
+# triton
+fastapi
+uvicorn
+httpx
+pydantic
+matplotlib
+tqdm

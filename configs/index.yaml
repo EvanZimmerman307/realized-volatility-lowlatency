@@ -1,0 +1,6 @@
+# configs/index.yaml
+raw_dir: data/raw
+out_dir: data
+eval_split: 0.2
+val_split: 0.1
+seed: 42

@@ -1,0 +1,28 @@
+splits:
+  train:
+    index: data/train_index.parquet
+    out_dir: data/shards_train
+  validation:
+    index: data/validation_index.parquet
+    out_dir: data/shards_val
+  eval:
+    index: data/eval_index.parquet
+    out_dir: data/shards_eval
+    
+feature_cols:
+  - size
+  - order_count
+  - wap_last
+  - seconds_since_last_wap
+  - log_return
+  - rv_30s
+  - rv_120s
+  - spread_last
+  - mid_last
+  - rel_spread_last
+  - ofi_last
+  - seconds_since_last_trade
+  - last_trade_gap_geq_cap
+  - order_intensity_60s
+shard_size: 2048
+workers: 8

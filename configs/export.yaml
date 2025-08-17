@@ -1,0 +1,5 @@
+ckpt_path: artifacts/best.pt
+onnx_out: artifacts/model.onnx
+in_dim: 14
+seq_len: 600
+opset: 17

@@ -1,0 +1,16 @@
+__pycache__/
+.ipynb_checkpoints/
+.DS_Store
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+build/
+dist/
+venv/
+.venv/
+data/
+*.onnx
+*.engine
+logs/
