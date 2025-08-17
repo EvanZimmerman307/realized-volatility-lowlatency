@@ -1,7 +1,7 @@
 # src/pipeline/export_onnx.py
 import torch, yaml
 from pathlib import Path
-from ..models.tiny_transformer import TinyRVTransformer
+from models.tiny_transformer import TinyRVTransformer
 
 def export_onnx(config_path: str):
     cfg = yaml.safe_load(open(config_path))

@@ -9,3 +9,4 @@ lr: 3e-4
 epochs: 8
 loss: rmspe       
 out_ckpt: artifacts/best.pt
+cuda_rmspe: True
