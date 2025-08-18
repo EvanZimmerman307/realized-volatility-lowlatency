@@ -2,7 +2,6 @@
 import torch, torch.nn as nn
 from data.sharded_dataset import make_loader
 from models.tiny_transformer import TinyRVTransformer
-from ops.rmspe_cuda import mspe_from_log_cuda
 import yaml, math
 
 def mspe_from_log(pred_log, y_log, eps=1e-8):
