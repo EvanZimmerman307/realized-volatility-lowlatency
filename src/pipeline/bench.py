@@ -50,7 +50,7 @@ def bench_main(config_path: str):
         # ---- Serial run ----
         serial_times = [_one_call(session, url, x) for _ in range(iters)]
         serial_stats = _percentiles(serial_times)
-        serial_qps = (iters * batch_size) / max(1e-9, serial_stats["total_s"]) # queries per second
+        serial_qps = (iters * batch_size) / max(1e-8, serial_stats["total_s"]) # queries per second
 
         # ---- Concurrent run ----
         concurrent_times = []
@@ -59,7 +59,7 @@ def bench_main(config_path: str):
             for f in as_completed(futures):
                 concurrent_times.append(f.result())
         concurrent_stats = _percentiles(concurrent_times)
-        conc_qps = (iters * batch_size) / max(1e-9, concurrent_stats["total_s"]) # queries per second
+        conc_qps = (iters * batch_size) / max(1e-8, concurrent_stats["total_s"]) # queries per second
 
     report = {
         "config": {

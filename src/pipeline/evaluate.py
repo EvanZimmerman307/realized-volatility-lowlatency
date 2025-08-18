@@ -23,7 +23,12 @@ def evaluate_main(config_path):
         shuffle_shards=False
     )
 
-    model = TinyRVTransformer(in_dim=len(manifest["feature_cols"]))
+    model = TinyRVTransformer(in_dim=cfg["in_dim"],
+                              d_model=cfg.get("d_model", 64),
+                              nhead=cfg.get("nhead", 2),
+                              nlayers=cfg.get("nlayers", 2),
+                              dim_ff=cfg.get("dim_ff", 128),
+                              dropout=0.1)
     state = torch.load(cfg["ckpt_path"], map_location="cpu")
     model.load_state_dict(state.get("model", state))
     model.to(device).eval()

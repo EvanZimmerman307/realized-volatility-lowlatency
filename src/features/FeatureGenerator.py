@@ -7,7 +7,7 @@ CPU feature engineering for (stock_id, time_id pairs).
 class FeatureGenerator:
     
     def __init__(self, book_data: pl.DataFrame, trade_data: pl.DataFrame):
-        self.EPS = 1e-9
+        self.EPS = 1e-8
         self.training_sample = pl.DataFrame({
             "seconds_in_bucket": range(0, 600),
         })
