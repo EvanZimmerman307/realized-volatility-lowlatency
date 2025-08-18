@@ -20,7 +20,8 @@ def _fg_one(args):
 
 def build_shards(config_path: str):
     """Make shards of samples"""
-    cfg = yaml.safe_load(open(config_path))
+    with open(config_path, "r") as f:
+        cfg = yaml.safe_load(f)
     feature_cols: List[str] = cfg["feature_cols"]
     shard_size = int(cfg.get("shard_size", 2048))
     workers = int(cfg.get("workers", max(1, (os.cpu_count() or 2) // 2)))

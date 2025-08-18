@@ -10,7 +10,8 @@ EPS = 1e-8
 
 @torch.inference_mode()
 def evaluate_main(config_path):
-    cfg = yaml.safe_load(open(config_path))
+    with open(config_path, "r") as f:
+        cfg = yaml.safe_load(f)
     shards_dir = Path(cfg["eval_shards_dir"])
     manifest = json.loads((shards_dir / "manifest.json").read_text())
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

@@ -4,6 +4,11 @@ from ..dataset.sharded_dataset import make_loader
 from ..models.tiny_transformer import TinyRVTransformer
 import yaml, math
 from pathlib import Path
+try:
+    from ..ops.rmspe_cuda import mspe_from_log_cuda
+    has_cuda_ext = True
+except Exception:
+    _has_cuda_ext = False
 
 def mspe_from_log(pred_log, y_log, eps=1e-8):
     y_true = torch.exp(y_log) - eps
@@ -24,13 +29,15 @@ def _eval_rmspe(model, loader, device, cuda_loss = False):
             pred32 = pred_log.float()
             y32 = y_log.float()
             mspe = mspe_from_log_cuda(pred32, y32) if cuda_loss else mspe_from_log(pred32, y32)
-            mspe_sum += mspe.item() * y_log.shape[0] # sum error across samples
+            mspe_sum += mspe.item() * y_log.shape[0] # sum error across samples for total batch
             n += y_log.shape[0]
     model.train()
     return float((mspe_sum / max(n, 1)) ** 0.5)  # RMSPE
 
 def train_main(config_path):
-    cfg = yaml.safe_load(open(config_path))
+    with open(config_path, "r") as f:
+        cfg = yaml.safe_load(f)
+        
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     train_loader = make_loader(cfg["train_shards_dir"],
@@ -64,11 +71,6 @@ def train_main(config_path):
     scaler = torch.amp.GradScaler('cuda', enabled=(device.type=='cuda'))
     loss_kind = cfg.get("loss", "log_mse")  # "log_mse" or "rmspe"
     
-    try:
-        from ..ops.rmspe_cuda import mspe_from_log_cuda
-        _has_cuda_ext = True
-    except Exception:
-        _has_cuda_ext = False
     cuda_loss = bool(cfg.get("cuda_rmspe", False)) and _has_cuda_ext and (device.type == "cuda")
     
     mse = nn.MSELoss()
@@ -76,7 +78,7 @@ def train_main(config_path):
     best_rmspe = float("inf")
     for epoch in range(cfg["epochs"]):
         model.train()
-        running = 0.0
+        running_mspe_sum, n = 0.0, 0
         steps = 0
         for X, y_log in train_loader:
             X = X.to(device, non_blocking=True)
@@ -95,9 +97,10 @@ def train_main(config_path):
             scaler.scale(loss).backward()
             scaler.step(opt)
             scaler.update()
-            running += loss.item()
+            running_mspe_sum += loss.item() * y_log.shape[0] # total batch loss
             steps += 1
-        avg = running / max(1, steps)
+            n += y_log.shape[0]
+        avg = float((running_mspe_sum / max(n, 1)) ** 0.5)
         msg = f"epoch {epoch}: train_{loss_kind}={avg:.5f}"
     
         # ---- validation & best checkpoint ----

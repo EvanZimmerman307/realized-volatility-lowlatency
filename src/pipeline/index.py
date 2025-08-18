@@ -3,7 +3,8 @@ import polars as pl, yaml
 from pathlib import Path
 
 def index_main(config_path: str):
-      cfg = yaml.safe_load(open(config_path))
+      with open(config_path, "r") as f:
+        cfg = yaml.safe_load(f)
       raw_dir = Path(cfg["raw_dir"])
       out_dir = Path(cfg["out_dir"]); out_dir.mkdir(parents=True, exist_ok=True)
 

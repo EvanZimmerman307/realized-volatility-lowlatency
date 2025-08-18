@@ -42,5 +42,6 @@ def create_app(onnx_path: str, manifest_path: str, providers=None) -> FastAPI:
 
 def serve_main(config_path: str) -> FastAPI:
     """Return a FastAPI app given a config file."""
-    cfg = yaml.safe_load(open(config_path))
+    with open(config_path, "r") as f:
+        cfg = yaml.safe_load(f)
     return create_app(cfg["onnx_path"], cfg["manifest_path"])

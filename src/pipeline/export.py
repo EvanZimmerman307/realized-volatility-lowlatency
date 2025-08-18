@@ -4,7 +4,8 @@ from pathlib import Path
 from models.tiny_transformer import TinyRVTransformer
 
 def export_onnx(config_path: str):
-    cfg = yaml.safe_load(open(config_path))
+    with open(config_path, "r") as f:
+        cfg = yaml.safe_load(f)
 
     ckpt_path = Path(cfg["ckpt_path"])
     onnx_out  = Path(cfg["onnx_out"])

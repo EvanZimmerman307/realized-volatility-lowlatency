@@ -29,7 +29,8 @@ def _percentiles(times):
     }
 
 def bench_main(config_path: str):
-    cfg = yaml.safe_load(open(config_path))
+    with open(config_path, "r") as f:
+        cfg = yaml.safe_load(f)
     url = cfg.get("url", "http://127.0.0.1:8000/predict")
     iters = int(cfg.get("iters", 200))
     batch_size = int(cfg.get("batch_size", 32))
