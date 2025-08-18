@@ -3,8 +3,8 @@ import os, json, numpy as np, polars as pl
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 from typing import Dict, Any, List
-from features.FeatureGenerator import FeatureGenerator
-from features.DataLoader import DataLoader
+from ..features.FeatureGenerator import FeatureGenerator
+from ..features.DataLoader import DataLoader
 import yaml
 
 EPS = 1e-8

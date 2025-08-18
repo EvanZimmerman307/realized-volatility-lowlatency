@@ -16,7 +16,8 @@ class Normalizer:
 
     # normalize
     def __call__(self, x: np.ndarray) -> np.ndarray:
-        return (x - self.mean) / (self.std + 1e-12)
+        # x shape: [B, 600, F], mean/std shape: [F]
+        return (x - self.mean[None, None, :]) / (self.std[None, None, :] + 1e-12)
 
 def create_app(onnx_path: str, manifest_path: str, providers=None) -> FastAPI:
     """Return a FastAPI app that serves predictions."""

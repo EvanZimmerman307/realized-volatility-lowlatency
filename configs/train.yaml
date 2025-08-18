@@ -1,6 +1,6 @@
 # configs/train.yaml
 train_shards_dir: data/shards_train
-eval_shards_dir: data/shards_validation   
+eval_shards_dir: data/shards_val   
 in_dim: 14
 batch_size: 64
 num_workers: 4

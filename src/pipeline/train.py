@@ -1,8 +1,9 @@
 # src/pipeline/train.py
 import torch, torch.nn as nn
-from data.sharded_dataset import make_loader
-from models.tiny_transformer import TinyRVTransformer
+from ..dataset.sharded_dataset import make_loader
+from ..models.tiny_transformer import TinyRVTransformer
 import yaml, math
+from pathlib import Path
 
 def mspe_from_log(pred_log, y_log, eps=1e-8):
     y_true = torch.exp(y_log) - eps
@@ -64,7 +65,7 @@ def train_main(config_path):
     loss_kind = cfg.get("loss", "log_mse")  # "log_mse" or "rmspe"
     
     try:
-        from ops.rmspe_cuda import mspe_from_log_cuda
+        from ..ops.rmspe_cuda import mspe_from_log_cuda
         _has_cuda_ext = True
     except Exception:
         _has_cuda_ext = False
@@ -100,6 +101,7 @@ def train_main(config_path):
         msg = f"epoch {epoch}: train_{loss_kind}={avg:.5f}"
     
         # ---- validation & best checkpoint ----
+        Path(cfg["out_ckpt"]).parent.mkdir(parents=True, exist_ok=True)
         if val_loader is not None:
             rmspe = _eval_rmspe(model, val_loader, device, cuda_loss)
             msg += f", val_rmspe={rmspe:.5f}"
