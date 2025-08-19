@@ -1,17 +1,15 @@
-numpy
-pandas
-polars>=0.20.0
-pyarrow
-scikit-learn
-xgboost
-lightgbm
-torch>=2.2
-onnx
-# onnxruntime-gpu
-# triton
-fastapi
-uvicorn
-httpx
-pydantic
-matplotlib
-tqdm
+torch>=2.1.0
+onnx>=1.14
+onnxruntime-gpu>=1.17
+numpy>=1.23
+polars>=0.19
+pyarrow>=12.0
+pyyaml>=6.0
+tqdm>=4.65
+fastapi>=0.95
+uvicorn[standard]>=0.22
+typer>=0.9
+requests>=2.31
+pytest>=7.0
+ninja
+typer

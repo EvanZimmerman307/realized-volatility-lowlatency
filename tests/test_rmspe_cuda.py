@@ -3,6 +3,8 @@ import pytest
 import torch
 import time
 
+"""PYTHONPATH=. pytest -vv"""
+
 # --- reference Python implementation ---
 def mspe_from_log(pred_log, y_log, eps=1e-8):
     y_true = torch.exp(y_log) - eps
@@ -16,6 +18,7 @@ def test_mspe_cuda_matches_python_forward_backward():
         from src.ops.rmspe_cuda import mspe_from_log_cuda
     except Exception as e:
         pytest.skip(f"CUDA extension not available/importable: {e}")
+        print(e)
 
     torch.manual_seed(0)
     N = 4096
@@ -27,6 +30,8 @@ def test_mspe_cuda_matches_python_forward_backward():
     # Forward parity
     mspe_py = mspe_from_log(pred_log, y_log, eps=eps)
     mspe_cu = mspe_from_log_cuda(pred_log, y_log, eps)
+    print(mspe_cu)
+    print(mspe_cu.item())
     assert torch.allclose(mspe_cu, mspe_py, rtol=1e-5, atol=1e-6)
 
     # Backward parity (grad w.r.t. pred_log)
@@ -48,10 +53,11 @@ def test_mspe_cuda_benchmark():
         from src.ops.rmspe_cuda import mspe_from_log_cuda
     except Exception as e:
         pytest.skip(f"CUDA extension not available/importable: {e}")
+        print(e)
 
     torch.manual_seed(0)
-    N = int(torch.getenv("RV_BENCH_N", "200000"))  # allow override via env var
-    iters = int(torch.getenv("RV_BENCH_ITERS", "50"))
+    N = 200000 # int(torch.getenv("RV_BENCH_N", "200000"))  # allow override via env var
+    iters = 50 # int(torch.getenv("RV_BENCH_ITERS", "50"))
     eps = 1e-8
 
     pred_log = torch.randn(N, device="cuda", dtype=torch.float32, requires_grad=False)

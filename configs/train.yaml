@@ -5,7 +5,7 @@ in_dim: 14
 batch_size: 64
 num_workers: 4
 prefetch: 4
-lr: 3e-4
+lr: 0.0003
 epochs: 8
 loss: rmspe       
 out_ckpt: artifacts/best.pt

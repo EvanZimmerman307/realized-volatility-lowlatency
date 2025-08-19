@@ -4,7 +4,7 @@ from pathlib import Path
 
 def index_main(config_path: str):
       with open(config_path, "r") as f:
-        cfg = yaml.safe_load(f)
+            cfg = yaml.safe_load(f)
       raw_dir = Path(cfg["raw_dir"])
       out_dir = Path(cfg["out_dir"]); out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -21,23 +21,32 @@ def index_main(config_path: str):
       # Validation: _hash in [train_threshold, train_threshold + val_split)
       # Eval/Test: _hash in [train_threshold + val_split, 1)
       train_threshold = 1 - eval_split - val_split
-      tagged = (train.group_by("stock_id", maintain_order=True)
+      tagged = (
+      train.group_by("stock_id", maintain_order=True)
             .map_groups(lambda g: g.with_columns([
-                  (pl.hash(["stock_id", "time_id"], seed=seed).cast(pl.Float64) / (2**64)).alias("_hash")
-            ])
-            .with_columns([
-                  pl.when(pl.col("_hash") < train_threshold)
-                  .then("train")
-                  .when((pl.col("_hash") >= train_threshold) & 
-                        (pl.col("_hash") < train_threshold + val_split))
-                  .then("validation")
-                  .otherwise("eval")
+                  (pl.concat_list([pl.col("stock_id"), pl.col("time_id")])
+                  .hash(seed=seed)
+                  .cast(pl.Float64) / (2**64)
+                  ).alias("_hash"),
+
+                  pl.when(
+                        (pl.concat_list([pl.col("stock_id"), pl.col("time_id")])
+                        .hash(seed=seed).cast(pl.Float64) / (2**64)) < train_threshold
+                  ).then(pl.lit("train"))
+                  .when(
+                        ((pl.concat_list([pl.col("stock_id"), pl.col("time_id")])
+                        .hash(seed=seed).cast(pl.Float64) / (2**64)) >= train_threshold) &
+                        ((pl.concat_list([pl.col("stock_id"), pl.col("time_id")])
+                        .hash(seed=seed).cast(pl.Float64) / (2**64)) < train_threshold + val_split)
+                  ).then(pl.lit("validation"))
+                  .otherwise(pl.lit("eval"))
                   .alias("split"),
+
                   (pl.lit(str(raw_dir / "book_train.parquet/stock_id=")) + pl.col("stock_id").cast(pl.Utf8)).alias("book_path"),
-                  (pl.lit(str(raw_dir / "trade_train.parquet/stock_id=")) + pl.col("stock_id").cast(pl.Utf8)).alias("trade_path")
-            ])
-            .drop("_hash"))
+                  (pl.lit(str(raw_dir / "trade_train.parquet/stock_id=")) + pl.col("stock_id").cast(pl.Utf8)).alias("trade_path"),
+            ])).drop("_hash")
       )
+
       
       # Why not sample randomly instead?
       # Hash-based split is reproducible across runs/machines, doesn't depend on RNG state

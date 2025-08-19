@@ -1,8 +1,8 @@
 # src/pipeline/evaluate.py
 import json, math, numpy as np, torch
 from pathlib import Path
-from train import mspe_from_log  # reuse
-from ..dataset.sharded_dataset import make_loader
+from pipeline.train import mspe_from_log  # reuse
+from dataset.sharded_dataset import make_loader
 from models.tiny_transformer import TinyRVTransformer
 import yaml
 
