@@ -109,10 +109,10 @@ def train_main(config_path):
 
     model = TinyRVTransformer(
         in_dim=cfg["in_dim"],
-        d_model=cfg.get("d_model", 64),
-        nhead=cfg.get("nhead", 2),
-        nlayers=cfg.get("nlayers", 2),
-        dim_ff=cfg.get("dim_ff", 128),
+        d_model=cfg.get("d_model", 128), # was 64
+        nhead=cfg.get("nhead", 4), # was 2
+        nlayers=cfg.get("nlayers", 3), # was 2
+        dim_ff=cfg.get("dim_ff", 256), # was 128
         dropout=0.1
     ).to(device)
     logger.info(
@@ -171,6 +171,8 @@ def train_main(config_path):
                     loss = mspe_from_log_cuda(pred32, y32) if cuda_loss else mspe_from_log(pred32, y32)
 
             scaler.scale(loss).backward()
+            scaler.unscale_(opt)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             scaler.step(opt)
             scaler.update()
 

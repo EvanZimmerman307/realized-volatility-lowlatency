@@ -3,6 +3,7 @@ import polars as pl
 """
 CPU feature engineering for (stock_id, time_id pairs).
 """
+# TODO: Fix the FeatureGenerator to ensure rv_30s and rv_120s never contain nan values by adding .fill_nan(0.0) after the rolling calculations.
 
 class FeatureGenerator:
     

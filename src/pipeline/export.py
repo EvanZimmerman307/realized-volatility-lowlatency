@@ -2,6 +2,7 @@
 import torch, yaml
 from pathlib import Path
 from models.tiny_transformer import TinyRVTransformer
+from pipeline.evaluate import _strip_prefixes
 
 def export_onnx(config_path: str):
     with open(config_path, "r") as f:
@@ -13,15 +14,19 @@ def export_onnx(config_path: str):
     seq_len   = cfg.get("seq_len", 600)  # default 600 seconds
     opset     = cfg.get("opset", 17)
 
-    # Recreate model
-    model = TinyRVTransformer(in_dim=in_dim,
-                              d_model=cfg.get("d_model", 64),
-                              nhead=cfg.get("nhead", 2),
-                              nlayers=cfg.get("nlayers", 2),
-                              dim_ff=cfg.get("dim_ff", 128),
-                              dropout=0.1)
     state = torch.load(ckpt_path, map_location="cpu")
-    model.load_state_dict(state.get("model", state))
+    sd = state.get("model", state)
+    sd = _strip_prefixes(sd)
+    
+    model = TinyRVTransformer(
+        in_dim=cfg["in_dim"],
+        d_model=cfg.get("d_model", 128),
+        nhead=cfg.get("nhead", 4),
+        nlayers=cfg.get("nlayers", 3),
+        dim_ff=cfg.get("dim_ff", 256),
+        dropout=0.1
+    )
+    model.load_state_dict(sd, strict=False)
     model.eval()
 
     # Example input (batch=1)

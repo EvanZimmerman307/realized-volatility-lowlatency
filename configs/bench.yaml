@@ -6,3 +6,4 @@ seqlen: 600
 warmup: 20
 concurrency: 8
 out_json: artifacts/bench_report.json
+manifest_path: data/shards_train/manifest.json

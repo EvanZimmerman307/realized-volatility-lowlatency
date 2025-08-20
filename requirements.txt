@@ -13,3 +13,4 @@ requests>=2.31
 pytest>=7.0
 ninja
 typer
+orjson

@@ -5,8 +5,8 @@ in_dim: 14
 batch_size: 64
 num_workers: 4
 prefetch: 4
-lr: 0.0003
-epochs: 8
+lr: 0.0002 # was 0.0003
+epochs: 12 # was 8
 loss: rmspe       
 out_ckpt: artifacts/best.pt
 cuda_rmspe: True
