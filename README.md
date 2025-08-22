@@ -38,6 +38,7 @@ The pipeline covers the full lifecycle:
 
 - Python 3.10+
 - CUDA-capable GPU (recommended)
+  - *I used a g4dn.xlarge EC2 instance (1 NVIDAI T4 GPU)* 
 - [Optiver Realized Volatility Prediction dataset](https://www.kaggle.com/competitions/optiver-realized-volatility-prediction/data)
 
 ### Installation
